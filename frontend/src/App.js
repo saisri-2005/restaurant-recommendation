@@ -143,123 +143,161 @@ function App() {
 
       {/* Styles */}
       <style>{`
-        .app-container {
-          display: flex;
-          flex-direction: row;
-          height: 100vh;
-          font-family: 'Poppins', sans-serif;
-          background: linear-gradient(to bottom right, #fff7ed, #ffe4b5);
-        }
-        .panel {
-          padding: 20px;
-          box-sizing: border-box;
-        }
-        .filters-panel {
-          width: 35%;
-          overflow-y: auto;
-          background: linear-gradient(to bottom, #fff7ed, #ffe4b5);
-          border-right: 1px solid #ddd;
-        }
-        .hero {
-          text-align: center;
-          margin-bottom: 20px;
-        }
-        .title {
-          font-size: 2.5rem;
-          font-weight: 900;
-          color: #f97316;
-          text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-          margin-bottom: 10px;
-          animation: bounce 2s infinite;
-        }
-        .subtitle {
-          font-size: 1.1rem;
-          color: #555;
-          font-weight: 500;
-        }
-        @keyframes bounce {
-          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-8px); }
-          60% { transform: translateY(-4px); }
-        }
-        .filters input {
-          width: 100%;
-          padding: 12px;
-          margin-bottom: 12px;
-          border-radius: 10px;
-          border: 1px solid #ccc;
-          outline: none;
-          font-size: 16px;
-          transition: 0.3s;
-        }
-        .filters input:focus {
-          border-color: #f97316;
-          box-shadow: 0 0 12px rgba(249, 115, 22, 0.3);
-        }
-        .restaurant-card {
-          padding: 16px;
-          margin-bottom: 14px;
-          border-radius: 12px;
-          background: #ffffffcc;
-          box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-          cursor: pointer;
-          transition: 0.3s;
-        }
-        .restaurant-card.selected {
-          background: linear-gradient(90deg, #ffe0b2, #ffd180);
-        }
-        .restaurant-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        .restaurant-name {
-          font-size: 1.25rem;
-          font-weight: 700;
-          margin-bottom: 5px;
-        }
-        .cuisine-badges span {
-          display: inline-block;
-          background: #f97316;
-          color: #fff;
-          padding: 3px 8px;
-          border-radius: 6px;
-          margin-right: 5px;
-          font-size: 12px;
-          transition: 0.3s;
-        }
-        .cuisine-badges span:hover {
-          background: #fb923c;
-        }
-        .rating {
-          font-weight: bold;
-          margin: 5px 0;
-        }
-        .location {
-          color: #555;
-        }
-        .map-panel {
-          width: 65%;
-          height: 100%;
-          transition: 0.5s;
-        }
-        .no-results {
-          text-align: center;
-          color: #555;
-          font-weight: bold;
-          margin-top: 40px;
-        }
-        @media (max-width: 1024px) {
-          .filters-panel {
-            width: 100%;
-            border-right: none;
-            border-bottom: 1px solid #ddd;
-          }
-          .map-panel {
-            width: 100%;
-            height: 50vh;
-          }
-        }
-      `}</style>
+  .app-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom right, #fff7ed, #ffe4b5);
+  }
+  .panel {
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .filters-panel {
+    width: 35%;
+    overflow-y: auto;
+    background: linear-gradient(to bottom, #fff7ed, #ffe4b5);
+    border-right: 1px solid #ddd;
+  }
+  .hero {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #f97316;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    animation: bounce 2s infinite;
+  }
+  .subtitle {
+    font-size: 1rem;
+    color: #555;
+    font-weight: 500;
+  }
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-8px); }
+    60% { transform: translateY(-4px); }
+  }
+
+  .filters input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+    transition: 0.3s;
+  }
+
+  .restaurant-card {
+    padding: 16px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    background: #ffffffcc;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: 0.3s;
+    word-wrap: break-word;
+  }
+  .restaurant-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    white-space: normal;
+  }
+
+  .cuisine-badges span {
+    display: inline-block;
+    background: #f97316;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-right: 5px;
+    font-size: 0.8rem;
+    transition: 0.3s;
+  }
+
+  .rating {
+    font-weight: bold;
+    margin: 5px 0;
+    font-size: 0.95rem;
+  }
+
+  .map-panel {
+    width: 65%;
+    height: 100%;
+    transition: 0.5s;
+  }
+
+  /* ✅ Mobile responsiveness */
+  @media (max-width: 1024px) {
+    .app-container {
+      flex-direction: column;
+      height: auto;
+    }
+    .filters-panel {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid #ddd;
+    }
+    .map-panel {
+      width: 100%;
+      height: 55vh;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .title {
+      font-size: 1.6rem;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+    }
+    .restaurant-name {
+      font-size: 1rem;
+    }
+    .filters input {
+      font-size: 0.9rem;
+      padding: 10px;
+    }
+    .restaurant-card {
+      padding: 12px;
+    }
+    .rating, .location {
+      font-size: 0.85rem;
+    }
+    .cuisine-badges span {
+      font-size: 0.75rem;
+      padding: 2px 6px;
+    }
+      .heading {
+  font-size: 2rem;           /* adjust for desktop */
+  font-weight: bold;
+  white-space: normal;       /* allow text to wrap */
+  word-wrap: break-word;     /* break long words if needed */
+  overflow-wrap: anywhere;   /* extra safety for long words */
+  text-align: center;        /* optional: center align */
+  margin: 10px 0;
+}
+@media screen and (max-width: 600px) {
+  .heading {
+    font-size: 1.2rem;       /* smaller on mobile */
+  }
+}
+.header-container {
+  width: 100%;              /* full width of screen */
+  padding: 0 10px;          /* some padding */
+  box-sizing: border-box;   /* include padding in width */
+}
+
+  }
+`}</style>
+
     </div>
   );
 }
