@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import MapComponent from './components/MapComponent';
 
 const restaurantsData = [
-  { _id: 1, name: 'Tandoori Delight', cuisine: ['Indian', 'North Indian'], location: 'Delhi', rating: 4.5, lat: 28.6139, lng: 77.209 },
+ { _id: 1, name: 'Tandoori Delight', cuisine: ['Indian', 'North Indian'], location: 'Delhi', rating: 4.5, lat: 28.6139, lng: 77.209 },
   { _id: 2, name: 'Sushi World', cuisine: ['Japanese', 'Seafood'], location: 'Bangalore', rating: 4.2, lat: 12.9716, lng: 77.5946 },
   { _id: 3, name: 'Pizza Planet', cuisine: ['Italian', 'Fast Food'], location: 'Mumbai', rating: 3.8, lat: 19.076, lng: 72.8777 },
   { _id: 4, name: 'Burger Hub', cuisine: ['American', 'Fast Food'], location: 'Delhi', rating: 4, lat: 28.7041, lng: 77.1025 },
@@ -71,11 +71,20 @@ function App() {
       })
     : [];
 
+  const getRatingColor = (rating) => {
+    if (rating >= 4.5) return '#16a34a'; // green
+    if (rating >= 4) return '#facc15';   // yellow
+    return '#ef4444';                     // red
+  };
+
   return (
     <div className="app-container">
-      {/* Left panel */}
+      {/* Left Panel - Hero + Filters */}
       <div className="panel filters-panel">
-        <h2>Restaurant Recommendation</h2>
+        <div className="hero">
+          <h1 className="title">🍽️ Restaurant Recommendation</h1>
+          <p className="subtitle">Find the best restaurants near you with your favorite cuisines & ratings!</p>
+        </div>
 
         {/* Filters */}
         <div className="filters">
@@ -102,7 +111,7 @@ function App() {
           />
         </div>
 
-        {/* Restaurant list */}
+        {/* Restaurant List */}
         {isFilterApplied ? (
           filteredRestaurants.length > 0 ? (
             filteredRestaurants.map(r => (
@@ -111,19 +120,19 @@ function App() {
                 className={`restaurant-card ${selectedRestaurant?._id === r._id ? 'selected' : ''}`}
                 onClick={() => setSelectedRestaurant(r)}
               >
-                <strong>{r.name}</strong>
+                <h2 className="restaurant-name">{r.name}</h2>
                 <div className="cuisine-badges">
                   {r.cuisine.map(c => <span key={c}>{c}</span>)}
                 </div>
-                <div>⭐ {r.rating}</div>
-                <div>{r.location}</div>
+                <div className="rating" style={{ color: getRatingColor(r.rating) }}>⭐ {r.rating}</div>
+                <div className="location">📍 {r.location}</div>
               </div>
             ))
           ) : <p className="no-results">No restaurants match your filters.</p>
         ) : <p className="no-results">Apply filters to see restaurants</p>}
       </div>
 
-      {/* Right panel: Map */}
+      {/* Right Panel - Map */}
       <div className="panel map-panel">
         <MapComponent
           restaurants={filteredRestaurants}
@@ -132,71 +141,114 @@ function App() {
         />
       </div>
 
-      {/* Responsive CSS */}
+      {/* Styles */}
       <style>{`
         .app-container {
           display: flex;
           flex-direction: row;
           height: 100vh;
-          font-family: Poppins, sans-serif;
+          font-family: 'Poppins', sans-serif;
+          background: linear-gradient(to bottom right, #fff7ed, #ffe4b5);
         }
         .panel {
-          padding: 15px;
+          padding: 20px;
           box-sizing: border-box;
         }
         .filters-panel {
           width: 35%;
           overflow-y: auto;
-          background: #fff;
+          background: linear-gradient(to bottom, #fff7ed, #ffe4b5);
           border-right: 1px solid #ddd;
+        }
+        .hero {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .title {
+          font-size: 2.5rem;
+          font-weight: 900;
+          color: #f97316;
+          text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+          margin-bottom: 10px;
+          animation: bounce 2s infinite;
+        }
+        .subtitle {
+          font-size: 1.1rem;
+          color: #555;
+          font-weight: 500;
+        }
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-8px); }
+          60% { transform: translateY(-4px); }
         }
         .filters input {
           width: 100%;
-          padding: 10px;
-          margin-bottom: 10px;
-          border-radius: 8px;
+          padding: 12px;
+          margin-bottom: 12px;
+          border-radius: 10px;
           border: 1px solid #ccc;
           outline: none;
+          font-size: 16px;
+          transition: 0.3s;
+        }
+        .filters input:focus {
+          border-color: #f97316;
+          box-shadow: 0 0 12px rgba(249, 115, 22, 0.3);
         }
         .restaurant-card {
-          padding: 12px;
-          margin-bottom: 10px;
-          border-radius: 10px;
-          background: #fafafa;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          padding: 16px;
+          margin-bottom: 14px;
+          border-radius: 12px;
+          background: #ffffffcc;
+          box-shadow: 0 6px 12px rgba(0,0,0,0.1);
           cursor: pointer;
           transition: 0.3s;
         }
         .restaurant-card.selected {
-          background: linear-gradient(90deg, #e0f7ff, #c0eaff);
+          background: linear-gradient(90deg, #ffe0b2, #ffd180);
         }
         .restaurant-card:hover {
-          box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+          transform: translateY(-4px);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .restaurant-name {
+          font-size: 1.25rem;
+          font-weight: 700;
+          margin-bottom: 5px;
         }
         .cuisine-badges span {
           display: inline-block;
-          background: #007bff;
+          background: #f97316;
           color: #fff;
-          padding: 2px 6px;
-          border-radius: 5px;
+          padding: 3px 8px;
+          border-radius: 6px;
           margin-right: 5px;
           font-size: 12px;
+          transition: 0.3s;
+        }
+        .cuisine-badges span:hover {
+          background: #fb923c;
+        }
+        .rating {
+          font-weight: bold;
+          margin: 5px 0;
+        }
+        .location {
+          color: #555;
         }
         .map-panel {
           width: 65%;
           height: 100%;
+          transition: 0.5s;
         }
         .no-results {
           text-align: center;
-          color: #999;
-          margin-top: 50px;
+          color: #555;
+          font-weight: bold;
+          margin-top: 40px;
         }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-          .app-container {
-            flex-direction: column;
-          }
+        @media (max-width: 1024px) {
           .filters-panel {
             width: 100%;
             border-right: none;

@@ -1,6 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import Map, { Marker, Popup, NavigationControl } from "react-map-gl";
+import mapboxgl from "mapbox-gl"; // required for bounds
 import "mapbox-gl/dist/mapbox-gl.css";
+
+const cuisineColors = {
+  Indian: "#FF6B6B",
+  Chinese: "#FFD93D",
+  Italian: "#6BCB77",
+  Thai: "#4D96FF",
+  Japanese: "#FF6EC7",
+  FastFood: "#FFA500",
+  Vegan: "#00C49A",
+  Seafood: "#008080",
+  Cafe: "#A569BD",
+  Asian: "#F7DC6F",
+  Mughlai: "#D35400",
+  Continental: "#5D6D7E",
+  BBQ: "#E74C3C",
+  SouthIndian: "#1ABC9C",
+  NorthIndian: "#F39C12",
+  Vegetarian: "#27AE60",
+  Healthy: "#2ECC71",
+  Beverages: "#2980B9",
+  Bakery: "#E59866"
+};
 
 const MapComponent = ({ restaurants, selectedRestaurant, setSelectedRestaurant }) => {
   const mapRef = useRef(null);
@@ -8,19 +31,34 @@ const MapComponent = ({ restaurants, selectedRestaurant, setSelectedRestaurant }
   const mapboxToken =
     "pk.eyJ1Ijoic2Fpc3JpLWNob3dkYXJ5IiwiYSI6ImNtZ3kzNWM0dzE2eHkybHNicjNhcjA3bXkifQ.bx2wORK37DBq4-4e5AK6wA";
 
+  // Get user location
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
-      (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      (pos) =>
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       (err) => console.error(err)
     );
   }, []);
 
+  // Fit map to selected restaurant or all filtered restaurants
   useEffect(() => {
-    if (mapRef.current && selectedRestaurant) {
-      const map = mapRef.current.getMap();
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+
+    if (selectedRestaurant) {
       map.flyTo({ center: [selectedRestaurant.lng, selectedRestaurant.lat], zoom: 12 });
+    } else if (restaurants.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      restaurants.forEach((r) => {
+        if (r.lat && r.lng) bounds.extend([r.lng, r.lat]);
+      });
+      if (userLocation) bounds.extend([userLocation.lng, userLocation.lat]);
+      map.fitBounds(bounds, { padding: 80, maxZoom: 12, duration: 1000 });
+    } else {
+      // Reset to India view
+      map.flyTo({ center: [78.9629, 20.5937], zoom: 4 });
     }
-  }, [selectedRestaurant]);
+  }, [restaurants, selectedRestaurant, userLocation]);
 
   return (
     <Map
@@ -33,17 +71,27 @@ const MapComponent = ({ restaurants, selectedRestaurant, setSelectedRestaurant }
       <NavigationControl position="top-right" />
 
       {/* User location */}
-      {userLocation && <Marker latitude={userLocation.lat} longitude={userLocation.lng} color="blue" />}
+      {userLocation && (
+        <Marker latitude={userLocation.lat} longitude={userLocation.lng} color="blue" />
+      )}
 
       {/* Restaurant markers */}
       {restaurants.map((r) =>
         r.lat && r.lng ? (
-          <Marker
-            key={r._id}
-            latitude={r.lat}
-            longitude={r.lng}
-            color={selectedRestaurant?._id === r._id ? "green" : "red"}
-          />
+          <Marker key={r.name} latitude={r.lat} longitude={r.lng}>
+            <div
+              onClick={() => setSelectedRestaurant(r)}
+              style={{
+                width: selectedRestaurant?.name === r.name ? 20 : 14,
+                height: selectedRestaurant?.name === r.name ? 20 : 14,
+                backgroundColor: selectedRestaurant?.name === r.name ? "#00C49A" : "#FF6B6B",
+                borderRadius: "50%",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                transform: selectedRestaurant?.name === r.name ? "scale(1.3)" : "scale(1)"
+              }}
+            ></div>
+          </Marker>
         ) : null
       )}
 
@@ -53,43 +101,80 @@ const MapComponent = ({ restaurants, selectedRestaurant, setSelectedRestaurant }
           latitude={selectedRestaurant.lat}
           longitude={selectedRestaurant.lng}
           anchor="top"
+          closeOnClick={true}
           onClose={() => setSelectedRestaurant(null)}
+          className="custom-popup"
         >
-          <div style={{ minWidth: '180px', fontFamily: 'Poppins, sans-serif' }}>
-            <strong style={{ fontSize: '16px' }}>{selectedRestaurant.name}</strong>
-            <div style={{ margin: '5px 0' }}>
-              {selectedRestaurant.cuisine.map(c => (
+          <div className="popup-content">
+            <h3>{selectedRestaurant.name}</h3>
+            <div className="cuisine-badges">
+              {selectedRestaurant.cuisine.map((c, i) => (
                 <span
-                  key={c}
+                  key={i}
                   style={{
-                    display: 'inline-block',
-                    background: '#007bff',
-                    color: '#fff',
-                    padding: '2px 6px',
-                    borderRadius: '5px',
-                    marginRight: '5px',
-                    fontSize: '12px',
+                    backgroundColor: cuisineColors[c.replace(" ", "")] || "#888",
+                    color: "#fff",
+                    padding: "3px 7px",
+                    marginRight: "5px",
+                    borderRadius: "8px",
+                    fontSize: "12px"
                   }}
                 >
                   {c}
                 </span>
               ))}
             </div>
-            <div>⭐ {selectedRestaurant.rating}</div>
-            <div>{selectedRestaurant.location}</div>
+            <p>⭐ {selectedRestaurant.rating}</p>
+            <p>{selectedRestaurant.location}</p>
             <a
               href={`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${selectedRestaurant.lat},${selectedRestaurant.lng}`}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ display: 'inline-block', marginTop: '8px', padding: '6px 10px', background: '#007bff', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontSize: '14px' }}
+              className="directions-btn"
             >
               Get Directions
             </a>
           </div>
         </Popup>
       )}
+
+      <style>{`
+        .custom-popup .mapboxgl-popup-content {
+          background: linear-gradient(135deg, #fdf6e3, #ffe6b3);
+          border-radius: 15px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+          padding: 15px;
+          font-family: 'Poppins', sans-serif;
+          min-width: 200px;
+        }
+        .popup-content h3 {
+          margin: 0 0 5px 0;
+          font-size: 16px;
+          color: #333;
+        }
+        .popup-content p {
+          margin: 4px 0;
+          color: #444;
+          font-size: 14px;
+        }
+        .directions-btn {
+          display: inline-block;
+          margin-top: 8px;
+          padding: 6px 12px;
+          background-color: #007bff;
+          color: white;
+          text-decoration: none;
+          border-radius: 8px;
+          font-size: 14px;
+          transition: 0.3s;
+        }
+        .directions-btn:hover {
+          background-color: #0056b3;
+        }
+      `}</style>
     </Map>
   );
 };
 
 export default MapComponent;
+
