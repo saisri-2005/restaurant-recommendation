@@ -22,7 +22,6 @@ const restaurantsData = [
   { _id: 18, name: 'Wok This Way', cuisine: ['Chinese', 'Thai'], location: 'Pune', rating: 4.3, lat: 18.5196, lng: 73.8553 },
   { _id: 19, name: 'Café Coffee Day', cuisine: ['Cafe', 'Beverages'], location: 'Bangalore', rating: 4.0, lat: 12.97, lng: 77.59 },
   { _id: 20, name: "Domino's Pizza", cuisine: ['Italian', 'Fast Food'], location: 'Mumbai', rating: 3.9, lat: 19.07, lng: 72.88 },
-  // Add more restaurants here
   { _id: 21, name: "Cafe Mocha", cuisine: ["Cafe", "Bakery"], location: "Delhi", rating: 4.2, lat: 28.61, lng: 77.20 },
   { _id: 22, name: "The Hungry Hippo", cuisine: ["American", "Fast Food"], location: "Mumbai", rating: 4.1, lat: 19.08, lng: 72.88 },
   { _id: 23, name: "Spicy Hub", cuisine: ["Indian", "Chinese"], location: "Bangalore", rating: 4.3, lat: 12.97, lng: 77.59 },
@@ -53,7 +52,6 @@ const restaurantsData = [
   { _id: 48, name: "Café Bliss", cuisine: ["Cafe", "Bakery"], location: "Pune", rating: 4.1, lat: 18.52, lng: 73.85 },
   { _id: 49, name: "The Curry House", cuisine: ["Indian", "Asian"], location: "Bangalore", rating: 4.3, lat: 12.97, lng: 77.59 },
   { _id: 50, name: "Pizza Paradise", cuisine: ["Italian", "Fast Food"], location: "Mumbai", rating: 4.0, lat: 19.07, lng: 72.88 },
-  // add more restaurants...
 ];
 
 function App() {
@@ -73,11 +71,13 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Left panel */}
+      {/* Filters Panel */}
       <div className="panel filters-panel">
-        <h2>Restaurant Recommendation</h2>
+        <div className="hero">
+          <h1 className="title">🍽️ Restaurant Recommendation</h1>
+          <p className="subtitle">Find the best restaurants near you with your favorite cuisines & ratings!</p>
+        </div>
 
-        {/* Filters */}
         <div className="filters">
           <input
             type="text"
@@ -102,7 +102,6 @@ function App() {
           />
         </div>
 
-        {/* Restaurant list */}
         {isFilterApplied ? (
           filteredRestaurants.length > 0 ? (
             filteredRestaurants.map(r => (
@@ -111,19 +110,29 @@ function App() {
                 className={`restaurant-card ${selectedRestaurant?._id === r._id ? 'selected' : ''}`}
                 onClick={() => setSelectedRestaurant(r)}
               >
-                <strong>{r.name}</strong>
+                <h2 className="restaurant-name">{r.name}</h2>
                 <div className="cuisine-badges">
                   {r.cuisine.map(c => <span key={c}>{c}</span>)}
                 </div>
-                <div>⭐ {r.rating}</div>
-                <div>{r.location}</div>
+                <div
+                  className="rating"
+                  style={{
+                    background: `linear-gradient(90deg, #f87171, #fbbf24, #22c55e)`,
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    color: 'transparent',
+                  }}
+                >
+                  ⭐ {r.rating}
+                </div>
+                <div className="location">📍 {r.location}</div>
               </div>
             ))
           ) : <p className="no-results">No restaurants match your filters.</p>
         ) : <p className="no-results">Apply filters to see restaurants</p>}
       </div>
 
-      {/* Right panel: Map */}
+      {/* Map Panel */}
       <div className="panel map-panel">
         <MapComponent
           restaurants={filteredRestaurants}
@@ -132,81 +141,27 @@ function App() {
         />
       </div>
 
-      {/* Responsive CSS */}
+      {/* Styles */}
       <style>{`
-        .app-container {
-          display: flex;
-          flex-direction: row;
-          height: 100vh;
-          font-family: Poppins, sans-serif;
-        }
-        .panel {
-          padding: 15px;
-          box-sizing: border-box;
-        }
-        .filters-panel {
-          width: 35%;
-          overflow-y: auto;
-          background: #fff;
-          border-right: 1px solid #ddd;
-        }
-        .filters input {
-          width: 100%;
-          padding: 10px;
-          margin-bottom: 10px;
-          border-radius: 8px;
-          border: 1px solid #ccc;
-          outline: none;
-        }
-        .restaurant-card {
-          padding: 12px;
-          margin-bottom: 10px;
-          border-radius: 10px;
-          background: #fafafa;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-          cursor: pointer;
-          transition: 0.3s;
-        }
-        .restaurant-card.selected {
-          background: linear-gradient(90deg, #e0f7ff, #c0eaff);
-        }
-        .restaurant-card:hover {
-          box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-        .cuisine-badges span {
-          display: inline-block;
-          background: #007bff;
-          color: #fff;
-          padding: 2px 6px;
-          border-radius: 5px;
-          margin-right: 5px;
-          font-size: 12px;
-        }
-        .map-panel {
-          width: 65%;
-          height: 100%;
-        }
-        .no-results {
-          text-align: center;
-          color: #999;
-          margin-top: 50px;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-          .app-container {
-            flex-direction: column;
-          }
-          .filters-panel {
-            width: 100%;
-            border-right: none;
-            border-bottom: 1px solid #ddd;
-          }
-          .map-panel {
-            width: 100%;
-            height: 50vh;
-          }
-        }
+        .app-container { display: flex; flex-direction: row; height: 100vh; font-family: 'Poppins', sans-serif; background: linear-gradient(to bottom right, #fff7ed, #ffe4b5); }
+        .panel { padding: 20px; box-sizing: border-box; }
+        .filters-panel { width: 35%; overflow-y: auto; background: linear-gradient(to bottom, #fff7ed, #ffe4b5); border-right: 1px solid #ddd; scroll-behavior: smooth; }
+        .hero { text-align: center; margin-bottom: 20px; }
+        .title { font-size: 2.2rem; font-weight: 900; background: linear-gradient(90deg, #f97316, #facc15, #16a34a, #3b82f6); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: bounce 2s infinite, gradientMove 5s ease infinite; margin-bottom: 10px; text-align: center; }
+        .subtitle { font-size: 1rem; color: #555; font-weight: 500; }
+        @keyframes bounce { 0%,20%,50%,80%,100% {transform: translateY(0);} 40% {transform: translateY(-8px);} 60% {transform: translateY(-4px);} }
+        @keyframes gradientMove { 0% {background-position:0% 50%;} 50% {background-position:100% 50%;} 100% {background-position:0% 50%;} }
+        .filters input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #ccc; outline: none; font-size: 1rem; transition: 0.3s; }
+        .filters input:focus { border-color: #f97316; box-shadow: 0 0 8px rgba(249,115,22,0.3); }
+        .restaurant-card { padding: 16px; margin-bottom: 14px; border-radius: 12px; background: #ffffffcc; box-shadow: 0 6px 12px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; word-wrap: break-word; }
+        .restaurant-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .restaurant-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; white-space: normal; }
+        .cuisine-badges span { display: inline-block; background: #f97316; color: #fff; padding: 3px 8px; border-radius: 6px; margin-right: 5px; font-size: 0.8rem; transition: 0.3s; }
+        .cuisine-badges span:hover { background-color: #16a34a; transform: scale(1.1); }
+        .rating { font-weight: bold; margin: 5px 0; font-size: 0.95rem; }
+        .map-panel { width: 65%; height: 100%; transition: 0.5s; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        @media (max-width: 1024px) { .app-container { flex-direction: column; height: auto; } .filters-panel { width: 100%; border-right: none; border-bottom: 1px solid #ddd; } .map-panel { width: 100%; height: 55vh; } }
+        @media (max-width: 600px) { .title { font-size: 1.6rem; } .subtitle { font-size: 0.9rem; } .restaurant-name { font-size: 1rem; } .filters input { font-size: 0.9rem; padding: 10px; } .restaurant-card { padding: 12px; } .rating, .location { font-size: 0.85rem; } .cuisine-badges span { font-size: 0.75rem; padding: 2px 6px; } }
       `}</style>
     </div>
   );
